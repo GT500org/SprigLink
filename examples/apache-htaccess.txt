@@ -1,0 +1,14 @@
+# Optional friendly links (/abc123).
+# Add these lines to the .htaccess that already sits next to index.php,
+# BELOW the rules that deny access to private files.
+# Do not replace that file, and do not remove the deny rules.
+# Then choose Friendly under Settings.
+# If SprigLink is in a subfolder, change RewriteBase to that folder, with a trailing slash.
+
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    RewriteBase /
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteRule ^ index.php [L]
+</IfModule>

@@ -1,0 +1,38 @@
+# SprigLink on nginx.
+# The website folder is the one that contains index.php.
+# Short links are https://short.example.com/?c=abc123
+# Admin is https://short.example.com/index.php?page=admin
+# No rewrite is required for that shape.
+
+server {
+    listen 80;
+    server_name short.example.com;
+    root /var/www/spriglink;
+    index index.php;
+
+    # Do not let visitors download the password file, the database, or the code.
+    location ~ ^/(app|templates|data|examples|tests)/ { deny all; }
+    location = /config.php { deny all; }
+    location = /router.php { deny all; }
+    location ~* \.(sqlite3?|db)(-wal|-shm)?$ { deny all; }
+
+    # Friendly links only (/abc123 instead of /?c=abc123).
+    # Put this block BEFORE the PHP block below. Leave it commented out
+    # if you only want normal /?c= links. After it is live, choose
+    # Friendly under Settings.
+    #
+    # location / {
+    #     try_files $uri $uri/ /index.php?$query_string;
+    # }
+
+    # PHP block. Keep this AFTER the friendly location above.
+    location ~ \.php$ {
+        include fastcgi_params;
+        fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
+        fastcgi_pass unix:/run/php/php8.3-fpm.sock;
+    }
+
+    location ~ /\. {
+        deny all;
+    }
+}
