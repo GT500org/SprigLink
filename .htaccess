@@ -1,0 +1,26 @@
+# SprigLink protection. Leave these rules in place.
+# Friendly /code links are optional and live in examples/apache-htaccess.txt.
+# Add those lines below this file's rules. Do not delete the deny rules.
+
+Options -Indexes
+DirectoryIndex index.php
+
+<IfModule mod_authz_core.c>
+  <FilesMatch "^(config\.php|router\.php)$">
+    Require all denied
+  </FilesMatch>
+</IfModule>
+<IfModule !mod_authz_core.c>
+  <FilesMatch "^(config\.php|router\.php)$">
+    Order allow,deny
+    Deny from all
+  </FilesMatch>
+</IfModule>
+
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+  RewriteRule ^(?:app|templates|data|examples|tests)(?:/|$) - [F,L]
+  RewriteRule ^config\.php$ - [F,L]
+  RewriteRule ^router\.php$ - [F,L]
+  RewriteRule \.(?:sqlite3?|db)(?:-wal|-shm)?$ - [F,L]
+</IfModule>
